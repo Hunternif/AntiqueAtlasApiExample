@@ -3,9 +3,9 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/Minecraft"/>
-	<classpathentry kind="lib" path="lib/antiqueatlas-2.3.8-mc1.6.4-deobf.jar">
+	<classpathentry kind="lib" path="lib/antiqueatlas-2.3.12-mc1.6.4-deobf.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/AntiqueAtlasApiExample/lib/antiqueatlas-2.3.8-mc1.6.4-javadoc.zip!/"/>
+			<attribute name="javadoc_location" value="jar:platform:/resource/AntiqueAtlasApiExample/lib/antiqueatlas-2.3.12-mc1.6.4-javadoc.zip!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
