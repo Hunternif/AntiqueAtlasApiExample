@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<project name="AntiqueAtlas" default="build-release">
+<project name="AntiqueAtlas" default="build-release-deobf">
 
     <property file="local.properties" />
     <property file="build.properties"/>
 
-	<property name="mcp.bin" value="${dir.mcp}/bin/minecraft" />
+    <property name="mcp.bin" value="${dir.mcp}/bin/minecraft" />
+	<property name="mcp.lib" value="${dir.mcp}/lib" />
     <property name="mcp.src" value="${dir.mcp}/src/minecraft" />
     <property name="mcp.reobf" value="${dir.mcp}/reobf/minecraft" />
 
@@ -22,45 +23,47 @@
         </classpath>
     </taskdef>
 
-	<target name="copy and replace tokens in sources">
-        <foreach list="${mod.sources}" param="foreach.src"
-            target="copy and replace tokens in folder" inheritall="true"/>
-    </target>
-    <target name="copy and replace tokens in folder">
+    <target name="copy and replace tokens in src" depends="getversion">
         <copy todir="${mcp.src}">
-            <fileset dir="${foreach.src}" excludes="assets/**,mcmod.info,*.png"/>
+            <fileset dir="src" excludes="assets/**,mcmod.info,*.png"/>
             <filterset begintoken="@@" endtoken="@@">
                 <filter token="MOD_VERSION" value="${mod.version}"/>
                 <filter token="MC_VERSION" value="${minecraft.version}"/>
             </filterset>
         </copy>
     </target>
-	<target name="cleanup">
-        <foreach list="${mod.sources}" param="foreach.src"
-            target="cleanup folder" inheritall="true"/>
-    </target>
-    <target name="cleanup folder">
+    <target name="cleanup">
         <delete>
             <!-- delete copied sources -->
             <fileset dir="${mcp.src}">
-                <present present="both" targetdir="${foreach.src}" />
+                <present present="both" targetdir="src" />
+            </fileset>
+        	<!-- delete copied libraries -->
+        	<fileset dir="${mcp.lib}" includes="**/*.jar">
+                <present present="both" targetdir="lib" />
             </fileset>
             <!-- delete empty directories -->
             <dirset dir="${mcp.src}">
-                <present present="both" targetdir="${foreach.src}" />
+                <present present="both" targetdir="src" />
                 <size value="0"/>
             </dirset>
         </delete>
     </target>
 
-    <target name="copy and replace tokens in mcmod.info">
-        <copy file="src/mcmod.info" todir="${mcp.reobf}" failonerror="false">
+    <target name="copy and replace tokens in mcmod.info" depends="getversion">
+        <copy file="src/mcmod.info" todir="${mcp.reobf}">
             <filterset begintoken="@@" endtoken="@@">
                 <filter token="MOD_VERSION" value="${mod.version}"/>
                 <filter token="MC_VERSION" value="${minecraft.version}"/>
             </filterset>
         </copy>
     </target>
+	
+	<target name="copy libs">
+		<copy todir="${mcp.lib}">
+			<fileset dir="lib" includes="**/*.jar"/>
+		</copy>
+	</target>
 
     <target name="recompile">
         <exec dir="${dir.mcp}" executable="cmd" osfamily="windows">
@@ -79,44 +82,46 @@
         </exec>
     </target>
 
-    <target name="package">
+    <target name="package" depends="getversion">
         <mkdir dir="${dir.release}" />
-        <zip destfile="${dir.release}/${mod.id}-${mod.version}-mc${minecraft.version}.zip">
+        <jar destfile="${dir.release}/${mod.id}-${mod.version}-mc${minecraft.version}.jar">
             <fileset dir="${mcp.reobf}" />
             <fileset dir="src" includes="assets/**,*.png" />
-        </zip>
+        </jar>
     </target>
-	<target name="package-deobf">
+    <target name="package-deobf" depends="getversion">
         <mkdir dir="${dir.release}" />
-        <zip destfile="${dir.release}/${mod.id}-${mod.version}-mc${minecraft.version}-deobf.zip">
-        	<fileset dir="${mcp.bin}">
+        <jar destfile="${dir.release}/${mod.id}-${mod.version}-mc${minecraft.version}-deobf.jar">
+            <fileset dir="${mcp.bin}">
                 <present present="both" targetdir="${mcp.reobf}" />
             </fileset>
             <fileset dir="${mcp.reobf}" includes="mcmod.info" />
             <fileset dir="src" includes="assets/**,*.png" />
-        </zip>
+        </jar>
+    </target>
+    <target name="javadoc zip" depends="getversion">
+        <mkdir dir="javadoc-temp"/>
+        <javadoc sourcepath="src" destdir="javadoc-temp" classpath="${mcp.bin}"/>
+        <zip basedir="javadoc-temp" destfile="${dir.release}/${mod.id}-${mod.version}-mc${minecraft.version}-javadoc.zip"/>
+        <delete dir="javadoc-temp"/>
+        <delete file="javadoc-temp"/>
     </target>
 
-	<!-- TODO: add the api as library to the the recompilcation unit -->
-    <target name="build-release">
+    <target name="getversion">
         <jgitversion dir="." property="mod.version"/>
         <echo message="${mod.version}" />
-        <antcallback target="copy and replace tokens in sources" />
+    </target>
+    <target name="build-release">
+        <antcallback target="copy and replace tokens in src" />
+    	<antcallback target="copy libs" />
         <antcallback target="recompile" />
         <antcallback target="reobfuscate" />
         <antcallback target="copy and replace tokens in mcmod.info" />
         <antcallback target="package" />
         <antcallback target="cleanup" />
+        <antcallback target="javadoc zip" />
     </target>
-	<target name="build-release-deobf">
-        <jgitversion dir="." property="mod.version"/>
-        <echo message="${mod.version}" />
-        <antcallback target="copy and replace tokens in sources" />
-        <antcallback target="recompile" />
-		<!-- need reobfuscation to compare file names in bin -->
-		<antcallback target="reobfuscate" />
-        <antcallback target="copy and replace tokens in mcmod.info" />
+    <target name="build-release-deobf" depends="build-release">
         <antcallback target="package-deobf" />
-        <antcallback target="cleanup" />
     </target>
 </project>
