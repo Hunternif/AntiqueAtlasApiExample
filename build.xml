@@ -97,6 +97,7 @@
         </zip>
     </target>
 
+	<!-- TODO: add the api as library to the the recompilcation unit -->
     <target name="build-release">
         <jgitversion dir="." property="mod.version"/>
         <echo message="${mod.version}" />
