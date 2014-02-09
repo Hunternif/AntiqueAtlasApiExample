@@ -54,7 +54,7 @@
     </target>
 
     <target name="copy and replace tokens in mcmod.info">
-        <copy file="src/mcmod.info" todir="${mcp.reobf}">
+        <copy file="src/mcmod.info" todir="${mcp.reobf}" failonerror="false">
             <filterset begintoken="@@" endtoken="@@">
                 <filter token="MOD_VERSION" value="${mod.version}"/>
                 <filter token="MC_VERSION" value="${minecraft.version}"/>
