@@ -1,0 +1,17 @@
+[
+{
+  "modid": "antiqueatlasapiexample",
+  "name": "Antique Atlas API Example",
+  "description": "Example mod using the AntiqueAtlas API to register custom tiles.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "logoFile": "",
+  "url": "https://github.com/Hunternif/AntiqueAtlasApiExample",
+  "updateUrl": "",
+  "authors": ["Hunternif"],
+  "credits": "",
+  "parent": "",
+  "screenshots": [],
+  "dependencies": ["antiqueatlas"]
+}
+]
