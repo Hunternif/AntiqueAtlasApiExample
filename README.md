@@ -8,6 +8,6 @@ What this mod does, is every time the player right-clicks on a block, a "test" t
 Building
 --------
 
-1. Check out the project and import it into a workspace with the project Minecraft.
-2. Create a copy of the file `local.properties.example`, rename it to `local.properties` (Git ignores it) and change the properties to valid paths on your computer. The paths are either absolute or relative to the project folder.
-3. Run the Ant script `build.xml`. By default it will create a release build, deobfuscated build and a zip file with the JavaDocs. Creation of JavaDocs will fail unless you run Ant in a JDK (instead of a simple JRE), but it will not affect the release builds.
+See the general instructions for installing Forge Gradle at https://github.com/MinecraftForge/MinecraftForge
+
+In order to build the mod run `./gradlew build`, the resulting jar file will be found in the folder `build/libs`.
